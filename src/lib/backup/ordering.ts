@@ -23,6 +23,7 @@ export type BackupModel =
   | "CoverLetter"
   | "Automation"
   | "Job"
+  | "JobEligibilityEvidence"
   | "Note"
   | "Contact"
   | "ContactRole"
@@ -141,6 +142,7 @@ export const MODEL_SPECS: Record<BackupModel, ModelSpec> = {
     },
     scope: byUser,
   },
+  JobEligibilityEvidence: { delegate: "jobEligibilityEvidence", fks: { jobId: "Job" }, scope: (userId) => ({ job: { userId } }) },
   Note: { delegate: "note", owner: "userId", fks: { jobId: "Job" }, scope: byUser },
   Contact: {
     delegate: "contact",
@@ -236,6 +238,7 @@ export const INSERT_ORDER: BackupModel[] = [
   "CoverLetter",
   "Automation",
   "Job",
+  "JobEligibilityEvidence",
   "Note",
   "Contact",
   "JobContact",

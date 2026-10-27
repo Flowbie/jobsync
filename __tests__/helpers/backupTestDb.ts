@@ -20,8 +20,8 @@ export function makeTestDbUrl(): { url: string; dir: string } {
 // current schema, not the migration history, and push is much faster.
 export function pushSchema(url: string): void {
   execFileSync(
-    "npx",
-    ["prisma", "db", "push", "--skip-generate", "--accept-data-loss"],
+    process.execPath,
+    [path.join(process.cwd(), "node_modules", "prisma", "build", "index.js"), "db", "push", "--skip-generate", "--accept-data-loss"],
     { env: { ...process.env, DATABASE_URL: url }, stdio: "pipe" },
   );
 }

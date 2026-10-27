@@ -1,6 +1,7 @@
 import "server-only";
 
 import { streamText, type LanguageModel, type UIMessageStreamWriter } from "ai";
+import { requestTemperature } from "@/lib/ai/temperature";
 import { AGENT_NESTED_STREAM_PART_TYPE } from "@/models/agent.model";
 import {
   genAiRequestAttrs,
@@ -74,7 +75,7 @@ export async function runNestedGeneration({
     ...genAiRequestAttrs({
       provider,
       model: modelName,
-      temperature,
+      temperature: requestTemperature(provider, modelName, temperature),
       numCtx,
       surface: SURFACE_BY_NESTED_LABEL[label] ?? SURFACES.AGENT_CHAT,
       system,
@@ -114,7 +115,7 @@ export async function runNestedGeneration({
         model,
         system,
         prompt,
-        temperature,
+        temperature: requestTemperature(provider, modelName, temperature),
         abortSignal: signal,
         // Deliberately no think:true. These sub-calls have no tools, so
         // reasoning buys nothing and costs 30s. The chat loop enables it.

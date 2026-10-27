@@ -462,6 +462,7 @@ model Job {
   CoverLetter   CoverLetter? @relation(fields: [coverLetterId], references: [id])
   coverLetterId String?
   Notes         Note[]
+    eligibilityEvidence JobEligibilityEvidence?
   tags        Tag[]
   contactLinks  JobContact[]
   stages        JobStage[]
@@ -485,6 +486,15 @@ model Job {
   // Also has a hand-written partial unique index (not expressible here):
   // UNIQUE(userId, jobUrl) WHERE automationId IS NOT NULL
   // See migrations/20260710000002_job_automation_url_unique
+}
+
+model JobEligibilityEvidence {
+  id        String   @id @default(uuid())
+  jobId     String   @unique
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  evidence  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ActivityType {

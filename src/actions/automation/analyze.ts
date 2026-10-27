@@ -3,6 +3,7 @@
 import db from "@/lib/db";
 import { requireUser } from "../shared";
 import { generateText } from "ai";
+import { requestTemperature } from "@/lib/ai/temperature";
 import { startAiCall } from "@/lib/aiUsage/tracker";
 import {
   getModel,
@@ -96,7 +97,7 @@ export async function analyzeDiscoveredJob(jobId: string): Promise<{
         ...genAiRequestAttrs({
           provider: ai.provider,
           model: ai.model || "qwen3.5:9b",
-          temperature: 0.3,
+          temperature: requestTemperature(ai.provider, ai.model || "qwen3.5:9b", 0.3),
           numCtx: APP_CONSTANTS.AI_OLLAMA_NUM_CTX,
           surface: SURFACES.JOB_MATCH,
           system: JOB_MATCH_SYSTEM_PROMPT,
@@ -123,7 +124,7 @@ export async function analyzeDiscoveredJob(jobId: string): Promise<{
             model,
             system: JOB_MATCH_SYSTEM_PROMPT,
             prompt: promptText,
-            temperature: 0.3,
+            temperature: requestTemperature(ai.provider, ai.model || "qwen3.5:9b", 0.3),
           });
         } catch (error) {
           void tracker.finish({ error });

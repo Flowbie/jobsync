@@ -99,6 +99,20 @@ describe("POST /api/ai/chat", () => {
     expect((await POST(req({ messages: [] }))).status).toBe(401);
   });
 
+  it("omits temperature for OpenAI GPT-6 Luna chat", async () => {
+    (getUserSettings as any).mockResolvedValue({
+      success: true,
+      data: { settings: { ai: { provider: "openai", model: "gpt-6-luna" } } },
+    });
+    await POST(req({ messages: [pasteMessage("nonpersonal test")] }));
+    expect(streamArgs().temperature).toBeUndefined();
+  });
+
+  it("retains temperature for Ollama chat", async () => {
+    await POST(req({ messages: [pasteMessage("nonpersonal test")] }));
+    expect(streamArgs().temperature).toBe(0.1);
+  });
+
   it("returns 429 using the chat bucket, not the shared one", async () => {
     (checkRateLimit as any).mockReturnValue({ allowed: false, remaining: 0, resetIn: 30000 });
     expect((await POST(req({ messages: [] }))).status).toBe(429);

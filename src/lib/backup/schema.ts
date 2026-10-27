@@ -362,6 +362,8 @@ const UserSettings = z.object({
   updatedAt: dt,
 });
 
+const JobEligibilityEvidence = z.object({ id, jobId: id, evidence: str, createdAt: dt, updatedAt: dt });
+
 const group = <T extends z.ZodTypeAny>(schema: T) =>
   z.array(schema).default([]);
 
@@ -387,6 +389,7 @@ export const BackupDataSchema = z.object({
   CoverLetter: group(CoverLetter),
   Automation: group(Automation),
   Job: group(Job),
+  JobEligibilityEvidence: group(JobEligibilityEvidence),
   Note: group(Note),
   Contact: group(Contact),
   JobContact: group(JobContact),

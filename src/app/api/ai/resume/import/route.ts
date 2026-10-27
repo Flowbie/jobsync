@@ -6,6 +6,7 @@ import { streamText, Output } from "ai";
 import path from "path";
 import fs from "fs";
 import { getModel } from "@/lib/ai/providers";
+import { requestTemperature } from "@/lib/ai/temperature";
 import { checkRateLimit } from "@/lib/ai/rate-limiter";
 import { TEMPERATURES } from "@/lib/ai/config";
 import { preprocessText } from "@/lib/ai";
@@ -142,7 +143,7 @@ export const POST = async (req: NextRequest) => {
       ...genAiRequestAttrs({
         provider: selectedModel.provider,
         model: selectedModel.model,
-        temperature: TEMPERATURES.ANALYSIS,
+        temperature: requestTemperature(selectedModel.provider, selectedModel.model ?? "", TEMPERATURES.ANALYSIS),
         numCtx: APP_CONSTANTS.AI_OLLAMA_NUM_CTX,
         surface: SURFACES.RESUME_IMPORT,
         system: RESUME_IMPORT_SYSTEM_PROMPT,
@@ -172,7 +173,7 @@ export const POST = async (req: NextRequest) => {
         output: Output.object({ schema: ResumeImportSchema }),
         system: RESUME_IMPORT_SYSTEM_PROMPT,
         prompt: buildResumeImportPrompt(preprocessResult.data.normalizedText),
-        temperature: TEMPERATURES.ANALYSIS,
+        temperature: requestTemperature(selectedModel.provider, selectedModel.model ?? "", TEMPERATURES.ANALYSIS),
         abortSignal: controller.signal,
         providerOptions: {
           ollama: { options: { num_ctx: APP_CONSTANTS.AI_OLLAMA_NUM_CTX } },

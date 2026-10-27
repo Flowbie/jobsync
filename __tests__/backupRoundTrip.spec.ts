@@ -131,6 +131,9 @@ async function seedFullAccount() {
   await prisma.note.create({
     data: { jobId: job.id, userId, content: "a note" },
   });
+  await prisma.jobEligibilityEvidence.create({
+    data: { jobId: job.id, evidence: JSON.stringify({ reviewed: true, sourceUrl: "https://example.com/job", candidate: {}, job: {} }) },
+  });
 
   const recruiter = await prisma.contactRole.findFirstOrThrow({
     where: { createdBy: userId, value: "recruiter" },
@@ -248,6 +251,7 @@ describe("backup round trip", () => {
     const result = await importBackup(buffer, userId, "owner@example.com", true);
 
     expect(result.counts.Job).toBe(1);
+    expect(result.counts.JobEligibilityEvidence).toBe(1);
     expect(result.filesWritten).toBe(1);
 
     // The safety net exists on disk and is a real, readable backup.
@@ -264,12 +268,13 @@ describe("backup round trip", () => {
     // Tag associations survive on both sides.
     const job = await prisma.job.findFirstOrThrow({
       where: { userId },
-      include: { tags: true, Company: true, Status: true, Notes: true },
+      include: { tags: true, Company: true, Status: true, Notes: true, eligibilityEvidence: true },
     });
     expect(job.tags.map((t) => t.value)).toEqual(["remote"]);
     expect(job.Company.label).toBe("Acme");
     expect(job.Status.value).toBe("applied");
     expect(job.Notes).toHaveLength(1);
+    expect(JSON.parse(job.eligibilityEvidence!.evidence).sourceUrl).toBe("https://example.com/job");
 
     const question = await prisma.question.findFirstOrThrow({
       where: { createdBy: userId },

@@ -1,4 +1,5 @@
 import { generateText } from "ai";
+import { requestTemperature } from "@/lib/ai/temperature";
 import {
   getModel,
   parseJobMatch,
@@ -62,7 +63,7 @@ ${removeHtmlTags(job.description)}
         ...genAiRequestAttrs({
           provider,
           model: modelName,
-          temperature: 0.3,
+          temperature: requestTemperature(provider, modelName, 0.3),
           numCtx: APP_CONSTANTS.AI_OLLAMA_NUM_CTX,
           surface: SURFACES.AUTOMATION_MATCH,
           system: AUTOMATION_JOB_MATCH_SYSTEM_PROMPT,
@@ -89,7 +90,7 @@ ${removeHtmlTags(job.description)}
             model,
             system: AUTOMATION_JOB_MATCH_SYSTEM_PROMPT,
             prompt: promptText,
-            temperature: 0.3,
+            temperature: requestTemperature(provider, modelName, 0.3),
             abortSignal: signal,
           });
         } catch (error) {

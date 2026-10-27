@@ -16,3 +16,4 @@ docs
 coverage
 __tests__
 e2e
+.test-tmp/

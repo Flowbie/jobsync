@@ -29,6 +29,12 @@ const run = (signal?: AbortSignal) =>
 describe("automation match usage", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it("omits temperature for GPT-6 Luna matching", async () => {
+    generateText.mockResolvedValue({ text: "x", totalUsage: {}, finishReason: "stop" });
+    await matchJobToResume(job, {} as any, "greenhouse" as any, { provider: "openai", model: "gpt-6-luna" } as any, "user-1");
+    expect(generateText.mock.calls[0][0].temperature).toBeUndefined();
+  });
+
   it("records an automations call with no num_ctx", async () => {
     generateText.mockResolvedValue({ text: "x", totalUsage: { inputTokens: 2000, outputTokens: 150 }, finishReason: "stop" });
     await run();

@@ -184,6 +184,11 @@ describe("generate_cover_letter agent tool", () => {
     expect(args.abortSignal).toBeDefined();
   });
 
+  it("omits temperature from nested GPT-6 Luna generation", async () => {
+    await execute(buildGenerateCoverLetterTool(ctx({ provider: "openai", modelName: "gpt-6-luna" })), {});
+    expect(streamText.mock.calls[0][0].temperature).toBeUndefined();
+  });
+
   // Only the two actionable sections travel: the rest would push the letter
   // toward apologising for gaps instead of selling strengths.
   it("passes the saved match's keywords and tips as guidance", async () => {

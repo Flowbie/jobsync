@@ -15,6 +15,7 @@ import {
   type UIMessage,
 } from "ai";
 import { getModel, type ProviderType } from "@/lib/ai/providers";
+import { requestTemperature } from "@/lib/ai/temperature";
 import { checkRateLimit } from "@/lib/ai/rate-limiter";
 import { TEMPERATURES } from "@/lib/ai/config";
 import { APP_CONSTANTS } from "@/lib/constants";
@@ -229,7 +230,7 @@ export const POST = async (req: NextRequest) => {
     ...genAiRequestAttrs({
       provider,
       model: modelName,
-      temperature: TEMPERATURES.ANALYSIS,
+      temperature: requestTemperature(provider, modelName, TEMPERATURES.ANALYSIS),
       numCtx: APP_CONSTANTS.AGENT_CHAT_NUM_CTX,
       surface: SURFACES.AGENT_CHAT,
       system: AGENT_CHAT_SYSTEM_PROMPT,
@@ -290,7 +291,7 @@ export const POST = async (req: NextRequest) => {
             ),
           ],
           // Argument extraction wants determinism.
-          temperature: TEMPERATURES.ANALYSIS,
+          temperature: requestTemperature(provider, modelName, TEMPERATURES.ANALYSIS),
           abortSignal: turnSignal,
           providerOptions: {
             // qwen3.5 is a hybrid-reasoning model and the provider defaults
